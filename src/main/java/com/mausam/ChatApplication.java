@@ -53,7 +53,9 @@ public class ChatApplication implements MessageListener
             if (msgToSend.equalsIgnoreCase("exit")){
                 topicConnection.close();
                 System.exit(0);
-            }else{
+            }
+            else if(msgToSend.equalsIgnoreCase("")) {  System.out.println(userId.toUpperCase() + " Enter Some Message to chat.");}
+            else{
                 TextMessage msg = (TextMessage)topicSession.createTextMessage();
                 msg.setText("\n["+userId+" : " +msgToSend +"]");
                 publisher.publish(msg);
