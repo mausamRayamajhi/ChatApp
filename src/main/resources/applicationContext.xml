@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:spring="http://camel.apache.org/schema/spring"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/jms http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/jms
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.0-M1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+    <amq:connectionFactory id="mqConnectionFactory" brokerURL="tcp://DESKTOP-UUL4TBJ:61616"/>
+
+    <amq:topic id="topic1" physicalName="chatTopic" />
+
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate" >
+        <property name="connectionFactory" ref="mqConnectionFactory" />
+    </bean>
+
+    <bean id="chatApplication" class="com.mausam.ChatApplication">
+        <property name="chatJMSTemplate" ref="jmsTemplate"/>
+        <property name="chatTopic" ref="topic1"/>
+    </bean>
+
+    <bean id="poiMessageListnerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="mqConnectionFactory"/>
+        <property name="destination" ref="topic1"/>
+        <property name="messageListener" ref="chatApplication"/>
+        <property name="concurrentConsumers" value="1"/>
+    </bean>
+</beans>
